@@ -28,8 +28,6 @@ services:
      - ./chemaxon/marvinjs:/home/runner/build/public/CmpdReg/marvinjs
      # Please add any dev volumes below this line
 #     - ./:/home/runner/acas_custom
-#     - ../acas_custom_avidity/:/home/runner/acas_shared
-     # - ./modules/BuildUtilities/:/home/runner/acas/modules/BuildUtilities
     env_file:
       - ./conf/docker/acas/environment/acas.env
 # Dev Command
