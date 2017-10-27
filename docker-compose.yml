@@ -16,8 +16,8 @@ services:
       - letsencrypt
   letsencrypt:
     image: quay.io/letsencrypt/letsencrypt:latest
-#    command:  bash -c "sleep 6 && certbot certonly --staging --standalone -d example.onacaslims.com --text --agree-tos --email brian@mcneilco.com --server https://acme-staging.api.letsencrypt.org/directory --rsa-key-size 4096 --verbose --renew-by-default --standalone-supported-challenges http-01"
-    command:  bash -c "sleep 6 && certbot certonly --standalone -d example.onacaslims.com --text --agree-tos --email brian@mcneilco.com --server https://acme-v01.api.letsencrypt.org/directory --rsa-key-size 4096 --verbose --renew-by-default --standalone-supported-challenges http-01"
+#    command:  bash -c "sleep 6 && certbot certonly --staging --standalone -d example.onacaslims.com --text --agree-tos --email support@mcneilco.com --server https://acme-staging.api.letsencrypt.org/directory --rsa-key-size 4096 --verbose --renew-by-default --standalone-supported-challenges http-01"
+    command:  bash -c "sleep 6 && certbot certonly --standalone -d example.onacaslims.com --text --agree-tos --email support@mcneilco.com --server https://acme-v01.api.letsencrypt.org/directory --rsa-key-size 4096 --verbose --renew-by-default --standalone-supported-challenges http-01"
     entrypoint: ""
     volumes:
       - certs:/etc/letsencrypt
