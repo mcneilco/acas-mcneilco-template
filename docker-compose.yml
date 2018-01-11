@@ -2,6 +2,8 @@ version: '2'
 services:
   nginx:
     image: mcneilco/letsencrypt-nginx:latest
+    depends_on:
+      - acas
     restart: always
     environment:
       - MY_DOMAIN_NAME=${MY_DOMAIN_NAME}

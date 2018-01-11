@@ -23,7 +23,12 @@ CMPDREG_SCHEMA=compound
 CMPDREG_ADMIN_USERNAME=compound_admin
 CMPDREG_ADMIN_PASSWORD=`openssl rand -hex 16`
 CMPDREG_USER_USERNAME=compound
-CMPDREG_USER_PASSWORD=`openssl rand -hex 16`" > ./conf/docker/cmpdreg/environment/cmpdreg.env
+CMPDREG_USER_PASSWORD=`openssl rand -hex 16
+CMPDREG_DATABASE_DRIVER=org.postgresql.Driver
+CMPDREG_DATABASE_URL=jdbc:postgresql://db:5432/${CMPDREG_DB_NAME}?searchpath=${CMPDREG_SCHEMA}
+CMPDREG_VALIDATION_QUERY=select version()
+CMPDREG_FLYWAY_LOCATION=com.labsynch.cmpdreg.db.migration.postgres,db/migration/postgres,db/migration/indigo/postgres
+CMPDREG_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect`" > ./conf/docker/cmpdreg/environment/cmpdreg.env
 
 mkdir -p ./conf/docker/seurat/environment
 echo "SEURAT=true
