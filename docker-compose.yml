@@ -2,8 +2,9 @@ version: '2'
 services:
   nginx:
     image: mcneilco/letsencrypt-nginx:latest
+    restart: always
     environment:
-      - MY_DOMAIN_NAME=example.onacaslims.com
+      - MY_DOMAIN_NAME=${MY_DOMAIN_NAME}
       - LETSENCRYPT_HOST=letsencrypt
       - LETSENCRYPT_PORT=80
       - LETSENCRYPT_SSL_PORT=443
@@ -16,8 +17,8 @@ services:
       - letsencrypt
   letsencrypt:
     image: quay.io/letsencrypt/letsencrypt:latest
-#    command:  bash -c "sleep 6 && certbot certonly --staging --standalone -d example.onacaslims.com --text --agree-tos --email support@mcneilco.com --server https://acme-staging.api.letsencrypt.org/directory --rsa-key-size 4096 --verbose --renew-by-default --standalone-supported-challenges http-01"
-    command:  bash -c "sleep 6 && certbot certonly --standalone -d example.onacaslims.com --text --agree-tos --email support@mcneilco.com --server https://acme-v01.api.letsencrypt.org/directory --rsa-key-size 4096 --verbose --renew-by-default --standalone-supported-challenges http-01"
+    command:  bash -c "sleep 6 && certbot certonly --staging --standalone -d $MY_DOMAIN_NAME --text --agree-tos --email support@mcneilco.com --server https://acme-staging.api.letsencrypt.org/directory --rsa-key-size 4096 --verbose --renew-by-default --standalone-supported-challenges http-01"
+#    command:  bash -c "sleep 6 && certbot certonly --standalone -d $MY_DOMAIN_NAME --text --agree-tos --email support@mcneilco.com --server https://acme-v01.api.letsencrypt.org/directory --rsa-key-size 4096 --verbose --keep-until-expiring --standalone-supported-challenges http-01"
     entrypoint: ""
     volumes:
       - certs:/etc/letsencrypt
@@ -28,23 +29,25 @@ services:
     environment:
       - TERM=xterm
   acas:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        ACAS_TAG: ${ACAS_TAG}
+    image: ${IMAGE}
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    #   args:
+    #     ACAS_TAG: ${ACAS_TAG}
     restart: always
     ports:
      - "3000:3000"
      - "3001:3001"
      - "5858:5858"
     environment:
-     - APP_NAME=McNeilco-ACAS
+     - APP_NAME=${DEPLOY_MODE}
      - PREPARE_MODULE_CONF_JSON=true
      - PREPARE_CONFIG_FILES=true
      - RUN_SYSTEM_TEST=false
      - DOCKER_HOST_IP=localhost
      - NODE_ENV=integration
+     - SOURCE_DIRECTORIES=/home/runner/acas_custom/sources/mcneilco-modules,/home/runner/acas_custom/sources/lot_aliquot_inventory,/home/runner/acas_custom
     volumes:
      - filestore:/home/runner/build/privateUploads
      - logs:/home/runner/logs
@@ -52,13 +55,17 @@ services:
      - /home/runner/build/src/r
      - /home/runner/build/conf/compiled
     # Add chemaxon marvinjs here
-     - ./chemaxon/marvinjs:/home/runner/build/public/CmpdReg/marvinjs
+    # - ./chemaxon/marvinjs:/home/runner/build/public/CmpdReg/marvinjs
      # Please add any dev volumes below this line
-#     - ./:/home/runner/acas_custom
+     # - ../demo_oss:/home/runner/oss_base
+     # - ../demo_private:/home/runner/acas_private
+     # - ../demo_lot_inventory:/home/runner/acas_lot_inventory
+     # - ./:/home/runner/acas_custom
+     # - ./modules/BuildUtilities/:/home/runner/acas/modules/BuildUtilities
     env_file:
       - ./conf/docker/acas/environment/acas.env
 # Dev Command
-#    command: ["bin/acas.sh", "run", "acas", "dev"]
+    # command: ["bin/acas.sh", "run", "acas", "dev"]
 # Start command
     command: ["bin/acas.sh", "run", "acas", "start"]
   rservices:
@@ -76,7 +83,7 @@ services:
       - logs:/home/runner/logs
     command: ["bin/acas.sh", "run", "rservices"]
   db:
-    image: mcneilco/acas-postgres:rdkit
+    image: mcneilco/acas-postgres:1.0-bingo
     restart: always
     volumes:
      - dbstore:/var/lib/postgresql/data
@@ -89,7 +96,7 @@ services:
     ports:
      - "5432:5432"
   tomcat:
-    image: mcneilco/tomcat-maven
+    image: mcneilco/tomcat-maven:openjdk8
     restart: always
     depends_on:
      - db
@@ -97,9 +104,9 @@ services:
      - "8080:8080"
      - "8000:8000"
     environment:
+     - ACAS_HOME=/home/runner/build
      - CATALINA_OPTS=-Xms512M -Xmx1024M -XX:MaxPermSize=512m
      - JAVA_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
-     - ACAS_HOME=/home/runner/build
     volumes_from:
      - roo
      - acas
@@ -119,9 +126,15 @@ services:
     volumes:
      - /usr/local/tomcat/webapps/cmpdreg
     # Add chemaxon license files here
-     - ./chemaxon/licenses/marvin4js-license.cxl:/usr/local/tomcat/webapps/ROOT/marvin4js-license.cxl
-     - ./chemaxon/licenses/license.cxl:/root/.chemaxon/license.cxl
+    # - ./chemaxon/licenses/marvin4js-license.cxl:/usr/local/tomcat/webapps/ROOT/marvin4js-license.cxl
+    # - ./chemaxon/licenses/license.cxl:/root/.chemaxon/license.cxl
     command: /bin/true
+  backup:
+    image: mcneilco/cron-backup:latest
+    env_file:
+      - ./conf/docker/postgres/environment/postgres.env
+    volumes_from:
+      - acas
 volumes:
   dbstore:
   filestore:
