@@ -2,9 +2,9 @@ version: '2'
 services:
   nginx:
     image: mcneilco/letsencrypt-nginx:latest
-    depends_on:
-      - acas
     restart: always
+    depends_on: 
+     - acas
     environment:
       - MY_DOMAIN_NAME=${MY_DOMAIN_NAME}
       - LETSENCRYPT_HOST=letsencrypt
@@ -56,6 +56,8 @@ services:
      - /home/runner/build/bin
      - /home/runner/build/src/r
      - /home/runner/build/conf/compiled
+     - ./modules/CmpdReg/src/client/custom/configuration.json:/home/runner/build/public/CmpdReg/client/custom/configuration.json
+     - ./modules/CmpdReg/src/client/custom/configuration.json:/usr/local/tomcat/webapps/cmpdreg/WEB-INF/classes/configuration.json
     # Add chemaxon marvinjs here
     # - ./chemaxon/marvinjs:/home/runner/build/public/CmpdReg/marvinjs
      # Please add any dev volumes below this line
