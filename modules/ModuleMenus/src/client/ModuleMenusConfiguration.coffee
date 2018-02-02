@@ -38,15 +38,6 @@ window.ModuleMenusConfiguration =
 		autoLaunchName:"eln_home_page"
 	,
 		isHeader: true
-		menuName: "Molecule Registration"
-		collapsible: true
-	,
-		isHeader: false,
-		menuName: "Small Molecule"
-		externalLink: "/cmpdreg"
-		requireUserRoles: [window.conf.roles.cmpdreg.chemistRole]
-	,
-		isHeader: true
 		menuName: "Search and Edit"
 		collapsible: true
 		requireUserRoles: [window.conf.roles.acas.userRole]
@@ -63,6 +54,17 @@ window.ModuleMenusConfiguration =
 		isHeader: false, menuName: "Experiment Browser"
 		mainControllerClassName: "ExperimentBrowserController"
 		requireUserRoles: [window.conf.roles.acas.userRole]
+	,
+		isHeader: true
+		menuName: "Admin"
+		collapsible: true
+		requireUserRoles: [window.conf.roles.acas.adminRole]
+	,
+		isHeader: false
+		menuName: "System Test"
+		mainControllerClassName: "SystemTestController"
+		autoLaunchName:"system_test"
+		requireUserRoles: [window.conf.roles.acas.adminRole]
 	,
 		isHeader: true
 		menuName: "CmpdReg Admin"

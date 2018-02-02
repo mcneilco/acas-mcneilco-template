@@ -141,6 +141,18 @@ services:
       - acas
 volumes:
   dbstore:
-  filestore:
-  logs:
+    driver: local-persist
+    driver_opts:
+      mountpoint: /opt/acas/dbstore
   certs:
+    driver: local-persist
+    driver_opts:
+      mountpoint: /opt/acas/certs
+  filestore:
+    driver: local-persist
+    driver_opts:
+      mountpoint: /opt/acas/filestore
+  logs:
+    driver: local-persist
+    driver_opts:
+      mountpoint: /opt/acas/logs

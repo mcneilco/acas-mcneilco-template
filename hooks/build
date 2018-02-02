@@ -1,0 +1,5 @@
+#!/bin/bash
+source .env
+echo "BUILDING IMAGE_NAME=$IMAGE_NAME USING ACAS_TAG=$ACAS_TAG"
+docker build --build-arg ACAS_TAG=$ACAS_TAG -t $IMAGE_NAME .
+
